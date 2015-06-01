@@ -1,9 +1,14 @@
-*******Event Detection 'Twitter and Wikipedia articles' by Estifanos Simegnew Getiye, and Offorji Godson EKezie. MMnet 2014-2015.*********
+*******Event Detection 'Twitter and Wikipedia articles' by Estifanos Simegnew Getiye, and Offorji Godson EKezie. 
+	MMnet 2014-2015.********************
 
-Thanks to Daniele Miorandi, Nicola Conci & Emanuele Sansone our tutors, We got to this point of achieving the project as fruit of your guide over our case study 'FSD from Twitter text stream and Wikipedia articles' during this course(MMnet) of our master studies in TLC at the University of Trento. We acknowledge your great effort and help rendered for the success of this project.  
+Thanks to Daniele Miorandi, Nicola Conci & Emanuele Sansone our tutors, We got to this point of achieving the project as fruit of your guide over our case study 'FSD from Twitter text stream and Wikipedia articles' during this course(MMnet) of our master studies in TLC at the University of Trento. 
+We acknowledge your great effort and help rendered for the success of this project. We would like to also thank Yue HE and Falitokiniaina RABEARISON for answering our questions and their valuable advice and cooperation.
 Contact: Estifanos Simegnew Getiye: simex2010@gmail.com,
  		 Offorji Godson EKezie: goddy_eke@yahoo.com
  		 
+We used Event Detection With CLustering of Wavelet-based Signals (EDCoW) code written by Yue HE and Falitokiniaina RABEARISON
+for Twitter event detection with small modification.
+
 General Usage Description
 	1.	Download the project from the git repository and Import it on Eclipse
 	2.	Make sure that the Eclipse you are using has WindowBuilder plugin, otherwise you will not be able to run the application
@@ -26,7 +31,7 @@ Brief Description of Parameters
 	EDCoW gamma 1:  is used to calculate theta1 (the first threshold value to remove trivial words)
 	EDCoW gamma2: is used to calculate theta2 (the second threshold value to select the words that should remain for modularity check)
 	EDCoW Threshold: is the final threshold value (epsilon threshold) that determines if a cluster from the modularity check step is to be considered an event or not.
-	Wikipedia Sample Interval(hr): is Wikipedia’s sliding window size value. 
+	Wikipedia Sample Interval(hr): is Wikipediaâ€™s sliding window size value. 
 	Wikipedia Page Count: is page view threshold to check for z-score value of a Wikipedia page or not.
 	Wikipedia Z-Score:  is the z-score threshold to consider a given Wikipedia page title as an event or not.
 External Libraries Used
