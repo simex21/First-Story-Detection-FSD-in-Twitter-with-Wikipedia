@@ -1,0 +1,6 @@
+sizeWindow = 45 
+debugMode = false
+thresholdE = 0.001
+delta = 15
+gamma2 = 4
+gamma1 = 7
