@@ -155,9 +155,9 @@ public class WikipediaEventDetector {
 			}
 		}
 	}
-	public static Set<String> getWikiEvents(){
+	/*public static Set<String> getWikiEvents(){
 		return wikiEvents;
-	}
+	}*/
 	
 	public static void setWikiParameters(){
 		Properties prop = new Properties();
@@ -174,6 +174,14 @@ public class WikipediaEventDetector {
 			if(i == null) return false;
 		}
 		return true;
+	}
+	
+	public static void setWikipediaEvents(Set<String> newWikiEvents){
+		wikiEvents = newWikiEvents;
+	}
+	
+	public static Set<String> getWikipediaEvents(){
+		return wikiEvents;
 	}
 
 }
