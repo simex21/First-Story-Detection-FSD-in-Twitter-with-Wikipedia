@@ -31,29 +31,31 @@ import Dwt.Main;
 public class GraphicalUserInterface {
 
 	private JFrame frmT;
-	private JTextArea txtrConsole;
-	private JTextArea txtrDetectedEventKeyWords;
+	private JTextArea consoleProgress;
+	private JTextArea detectedEventKeyWords;
 	private JScrollPane scrollPane;
 	Set<String> eventKeyWords = new HashSet<String> ();
+	Set<String> wikipediaEvents = new HashSet<String> ();
+	Set<String> displayEventKeywords = new HashSet<String> ();
 	Set<String> fsd = new HashSet<String>();
 	private JButton btnExit;
 	private JPanel panel;
 	private DefaultComboBoxModel model;
 	private JComboBox comboBox;
 	private JButton btnChangeParameters;
-	private JButton btnFetchTweets;
 	private JLabel lblDetectedEventKeywords;
 	private JLabel lblGeneralInformation;
 	private JTextArea wikiEvents;
 	private JTextArea detectedFirstStories;
 	private JLabel lblWikipediaEvents;
 	private JLabel lblDetectedFirstStories;
-	private JButton btnFetchTweets_1;
+	private JButton btnFetchTweets;
 	private JLabel lblPic;
 	private JScrollPane scrollPane_1;
 	private JScrollPane scrollPane_2;
 	private JScrollPane scrollPane_3;
 	private JScrollPane scrollPane_4;
+	private JButton btnGenerateKeyWords;
 
 	/**
 	 * Launch the application.
@@ -89,7 +91,7 @@ public class GraphicalUserInterface {
 	  private void updateTextArea(final String text) {
 	    SwingUtilities.invokeLater(new Runnable() {
 	      public void run() {
-	    	  txtrConsole.append(text);
+	    	  consoleProgress.append(text);
 	      }
 	    });
 	  }
@@ -127,11 +129,13 @@ public class GraphicalUserInterface {
 		frmT.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmT.getContentPane().setLayout(null);
 		
-		JButton btnDetectevent = new JButton("Detect Events");
-		btnDetectevent.addActionListener(new ActionListener() {
+		JButton btnDetectEvents = new JButton("Detect Events");
+		btnDetectEvents.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				txtrDetectedEventKeyWords.setText(null);
-				txtrConsole.setText(null);
+				detectedEventKeyWords.setText(null);
+				consoleProgress.setText(null);
+				wikiEvents.setText(null);
+				detectedFirstStories.setText(null);
 				panel = new JPanel();
 		        panel.add(new JLabel("Please select date to get events:"));
 		        model = new DefaultComboBoxModel();
@@ -141,6 +145,7 @@ public class GraphicalUserInterface {
 		        model.addElement("20150530");
 		        model.addElement("20150531");
 		        model.addElement("20150601");
+		        model.addElement("20111020");
 		        comboBox = new JComboBox(model);
 		        panel.add(comboBox);
 
@@ -160,11 +165,11 @@ public class GraphicalUserInterface {
 										}
 		                	        	eventKeyWords = Main.getEventKeyWords();
 		                	        	if(eventKeyWords.isEmpty()||eventKeyWords == null){
-		        							txtrDetectedEventKeyWords.append("No Events are detected!");
+		        							detectedEventKeyWords.append("No Events are detected!");
 		        						}
 		        						else{
 		        							for(String event:eventKeyWords){
-		        								txtrDetectedEventKeyWords.append(event+"\n");
+		        								detectedEventKeyWords.append(event+"\n");
 		        							}
 		        						}
 		                	        }
@@ -182,21 +187,40 @@ public class GraphicalUserInterface {
 											e.printStackTrace();
 										}
 										eventKeyWords = Main.getEventKeyWords();
+										//eventKeyWords.add("religion");
 										if(eventKeyWords.isEmpty()||eventKeyWords == null){
-											txtrDetectedEventKeyWords.append("No Events keyword are detected!");
+											detectedEventKeyWords.append("No Events keyword are detected!");
 										}
 										else{
 											for(String event:eventKeyWords){
-												txtrDetectedEventKeyWords.append(event+"\n");
-												if(Main.keywordswithwiki(event))fsd.add(event);
+												detectedEventKeyWords.append(event+"\n");
+												//if(Main.keywordswithwiki(event))fsd.add(event);
 											}
-											if(fsd.size()>0){
+											/*if(fsd.size()>0){
 							                	for(String s:fsd){
-								                	detectedFirstStories.append(s);
+								                	detectedFirstStories.append(s+"\n");
 								                }
 							                }else{
-							                	detectedFirstStories.append("No events detected after filering with Wikipedia");
-							                }
+							                	detectedFirstStories.append("No events detected after filering with Wikipedia"+"\n");
+							                }*/
+										}
+										wikipediaEvents = Main.getwikiEventsToDispaly();
+										if(wikipediaEvents.isEmpty()||wikipediaEvents == null){
+											wikiEvents.append("No Wikipedia Events were detected!");
+										}
+										else{
+											for(String wikiEvent:wikipediaEvents){
+												wikiEvents.append(wikiEvent+"\n");
+											}
+										}
+										displayEventKeywords = Main.compareKeywordsWithWikiEvents(eventKeyWords, wikipediaEvents);
+										if(displayEventKeywords.isEmpty()||displayEventKeywords == null){
+											detectedFirstStories.append("No events detected after filtering with Wikipedia!"+"\n");
+										}
+										else{
+											for(String eventKeyword:displayEventKeywords){
+												detectedFirstStories.append(eventKeyword+"\n");
+											}
 										}
 		                	            }
 		                	    }).start();         
@@ -210,8 +234,8 @@ public class GraphicalUserInterface {
 		        }
 			}
 		});
-		btnDetectevent.setBounds(24, 466, 157, 23);
-		frmT.getContentPane().add(btnDetectevent);
+		btnDetectEvents.setBounds(24, 466, 157, 23);
+		frmT.getContentPane().add(btnDetectEvents);
 		
 		btnExit = new JButton("Exit");
 		btnExit.addActionListener(new ActionListener() {
@@ -226,19 +250,23 @@ public class GraphicalUserInterface {
 		btnChangeParameters = new JButton("Change Parameters");
 		btnChangeParameters.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				txtrDetectedEventKeyWords.setText(null);
-				txtrConsole.setText(null);
+				detectedEventKeyWords.setText(null);
+				consoleProgress.setText(null);
+				wikiEvents.setText(null);
+				detectedFirstStories.setText(null);
 				ChangeParameters.changeParams();
 			}
 		});
 		btnChangeParameters.setBounds(209, 466, 160, 23);
 		frmT.getContentPane().add(btnChangeParameters);
 		
-		btnFetchTweets = new JButton("Generate KeyWords");
-		btnFetchTweets.addActionListener(new ActionListener() {
+		btnGenerateKeyWords = new JButton("Generate KeyWords");
+		btnGenerateKeyWords.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				txtrDetectedEventKeyWords.setText(null);
-				txtrConsole.setText(null);
+				detectedEventKeyWords.setText(null);
+				consoleProgress.setText(null);
+				wikiEvents.setText(null);
+				detectedFirstStories.setText(null);
 				try {
 					InputToEDCoW.inputToEdcow();
 				} catch (IOException e) {
@@ -247,8 +275,8 @@ public class GraphicalUserInterface {
 				System.out.println("Finished Generating keywords!");
 			}
 		});
-		btnFetchTweets.setBounds(391, 466, 200, 23);
-		frmT.getContentPane().add(btnFetchTweets);
+		btnGenerateKeyWords.setBounds(391, 466, 200, 23);
+		frmT.getContentPane().add(btnGenerateKeyWords);
 		
 		lblDetectedEventKeywords = new JLabel("Twitter Event KeyWords");
 		lblDetectedEventKeywords.setBounds(24, 153, 156, 36);
@@ -266,9 +294,13 @@ public class GraphicalUserInterface {
 		lblDetectedFirstStories.setBounds(492, 61, 323, 14);
 		frmT.getContentPane().add(lblDetectedFirstStories);
 		
-		btnFetchTweets_1 = new JButton("Fetch Tweets");
-		btnFetchTweets_1.addActionListener(new ActionListener() {
+		btnFetchTweets = new JButton("Fetch Tweets");
+		btnFetchTweets.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				detectedEventKeyWords.setText(null);
+				consoleProgress.setText(null);
+				wikiEvents.setText(null);
+				detectedFirstStories.setText(null);
 				try {
 					TweetsFetcher.fetchTweets();
 				} catch (TwitterException | IOException e) {
@@ -276,15 +308,15 @@ public class GraphicalUserInterface {
 				}
 			}
 		});
-		btnFetchTweets_1.setBounds(627, 466, 127, 23);
-		frmT.getContentPane().add(btnFetchTweets_1);
+		btnFetchTweets.setBounds(627, 466, 127, 23);
+		frmT.getContentPane().add(btnFetchTweets);
 		
 		scrollPane_4 = new JScrollPane();
 		scrollPane_4.setBounds(24, 403, 406, 39);
 		frmT.getContentPane().add(scrollPane_4);
 		
-		txtrConsole = new JTextArea();
-		scrollPane_4.setViewportView(txtrConsole);
+		consoleProgress = new JTextArea();
+		scrollPane_4.setViewportView(consoleProgress);
 		
 		lblPic = new JLabel("Pic");
 		Image TwitterWikiPic = new ImageIcon(this.getClass().getResource("/TwitterWikiPic.jpg")).getImage();
@@ -297,9 +329,9 @@ public class GraphicalUserInterface {
 		scrollPane_1.setBounds(22, 184, 141, 184);
 		frmT.getContentPane().add(scrollPane_1);
 		
-		txtrDetectedEventKeyWords = new JTextArea();
-		scrollPane_1.setViewportView(txtrDetectedEventKeyWords);
-		txtrDetectedEventKeyWords.setToolTipText("");
+		detectedEventKeyWords = new JTextArea();
+		scrollPane_1.setViewportView(detectedEventKeyWords);
+		detectedEventKeyWords.setToolTipText("");
 		
 		scrollPane_2 = new JScrollPane();
 		scrollPane_2.setBounds(181, 184, 249, 184);
