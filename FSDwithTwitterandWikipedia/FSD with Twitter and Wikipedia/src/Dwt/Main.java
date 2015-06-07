@@ -28,7 +28,6 @@ import FileSystem.DiskFileExplorer;
 import ch.epfl.lis.networks.NetworkException;
 
 import TwitterWikiPackage.GatherUps;
-import TwitterWikiPackage.WikiThread;
 import TwitterWikiPackage.WikipediaThread;
 import TwitterWikiPackage.TwitterToWikipediaEventsComparator;
 import TwitterWikiPackage.WikipediaEventDetector;
@@ -54,7 +53,7 @@ public class Main {
  */
 	public static void edcowMain(String tweetDate) throws NetworkException, Exception{
 		//WikipediaThread.wikiThread();
-		WikiThread wikiThread = new WikiThread(); //create a new 
+		WikipediaThread wikiThread = new WikipediaThread(); //create a new 
 		try{
 			System.out.println("================Starting Twitter event detection=========== ");
 			properties = GatherUps.loadProps();
