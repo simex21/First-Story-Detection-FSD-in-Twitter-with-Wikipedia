@@ -28,6 +28,7 @@ import FileSystem.DiskFileExplorer;
 import ch.epfl.lis.networks.NetworkException;
 
 import TwitterWikiPackage.GatherUps;
+import TwitterWikiPackage.WikiThread;
 import TwitterWikiPackage.WikipediaThread;
 import TwitterWikiPackage.TwitterToWikipediaEventsComparator;
 import TwitterWikiPackage.WikipediaEventDetector;
@@ -41,7 +42,9 @@ import TwitterWikiPackage.WikipediaEventDetector;
 public class Main {
 	public static HashMap<String, String> mapParam = new HashMap<String, String>();
 	public static Set<String> eventKeyWords = new HashSet<String>(); 
-	public static Properties properties = new Properties();           									
+	public static Set<String> displayEventKeywords = new HashSet<String>();
+	public static Properties properties = new Properties();  
+	public static Set<String> wikiEventsToDispaly = new HashSet<String>();
 	
 /**
  * Method to run the event detection algorithms, both Twitter and Wikipedia
@@ -50,10 +53,32 @@ public class Main {
  * @throws Exception
  */
 	public static void edcowMain(String tweetDate) throws NetworkException, Exception{
-		WikipediaThread.wikiThread();
-		System.out.println("================Starting Twitter event detection=========== ");
-		properties = GatherUps.loadProps();
-		TreatSignals(tweetDate);
+		//WikipediaThread.wikiThread();
+		WikiThread wikiThread = new WikiThread(); //create a new 
+		try{
+			System.out.println("================Starting Twitter event detection=========== ");
+			properties = GatherUps.loadProps();
+			TreatSignals(tweetDate);
+			Thread.sleep(50);
+		}catch(InterruptedException e){
+			System.out.println("Twitter event detection thread interrupted.");
+		}
+		while(wikiThread.isAlive()){
+			try{
+				Thread.sleep(1000);
+			}catch(InterruptedException e){
+				e.printStackTrace();
+			}
+		}
+		System.out.println("wikipedia events are: "+WikipediaEventDetector.getWikipediaEvents());
+		wikiEventsToDispaly = WikipediaEventDetector.getWikipediaEvents();
+		//compare eventKeywords with wikiEventsToDisplay
+		
+		Set<String> reset = new HashSet<String>();
+		WikipediaEventDetector.setWikipediaEvents(reset);
+		System.out.println("wikipedia events after resetting are: "+WikipediaEventDetector.getWikipediaEvents());
+		System.out.println("Twitter thread exiting.");
+		
 	}
 		
 	/**
@@ -223,6 +248,22 @@ public class Main {
 		else
 			System.out.println("Clusters filtered with Epsilon, There is no twitter event detected");
 	} //END TreatSignals() 
+	
+	public static Set<String> compareKeywordsWithWikiEvents(Set<String> keyWordEvents, Set<String> wikiEvents){
+		for(String keyword:keyWordEvents){
+			for(String wikiEvent:wikiEvents){
+				try {
+					if(TwitterToWikipediaEventsComparator.sendGet(keyword, wikiEvent)){
+						displayEventKeywords.add(keyword);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return displayEventKeywords;
+	}
+	
 	public static void fromKeywordsToTweets(String eventString, String tweetDate) throws IOException{
 		Pattern pattern = Pattern.compile("\\w+");
 		Matcher matcher = pattern.matcher(eventString);
@@ -285,5 +326,13 @@ public class Main {
 	
 	public static Set<String> getEventKeyWords(){
 		return eventKeyWords;
+	}
+	
+	public static Set<String> getwikiEventsToDispaly(){
+		return wikiEventsToDispaly;
+	}
+	
+	public static Set<String> getdisplayEventKeywords(){
+		return displayEventKeywords;
 	}
 }
